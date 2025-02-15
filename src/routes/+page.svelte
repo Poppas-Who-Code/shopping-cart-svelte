@@ -6,6 +6,7 @@
 		name: string;
 		price: number;
 		img: string;
+		category: string;
 	};
 
 	type CartItem = {
@@ -17,26 +18,37 @@
 		{
 			name: 'Turkey',
 			price: 200,
+			category: 'bird flu',
 			img: 'https://www.allrecipes.com/thmb/cVQL59QQ70ikOvtpcZU3TmQRPkg=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/ALR-166160-juicy-thanksgiving-turkey-VAT-4958-4x3-e9fdc719770d4661b5d831f958e6eb78.jpg'
 		},
 		{
 			name: 'Beef',
 			price: 100,
+			category: 'mad cow',
 			img: 'https://www.eatthis.com/wp-content/uploads/sites/4/2022/06/packaged-meat.jpg?quality=82&strip=1&w=640'
 		},
 		{
 			name: 'Chicken',
 			price: 300,
+			category: 'bird flu',
 			img: 'https://cdn.greatlifepublishing.net/wp-content/uploads/sites/2/2020/06/01160949/chicken-video.jpg'
 		}
 	];
 
-	let cart: CartItem[] = [];
+	enum SortButtonText {
+		Unsorted = 'Unsorted',
+		Ascending = 'Ascending',
+		Descending = 'Descending'
+	}
 
+	let cart: CartItem[] = [];
 	let cartTotal = 0;
 	let typedSearchTerm = '';
 	let appliedSearchTerm = '';
 	let displayedCatalog: Item[] = [];
+	let selectedFilter: keyof Item = 'name';
+	let sortDirection: 1 | -1 | 0 = 0;
+	let sortButtonText: SortButtonText = SortButtonText.Unsorted;
 
 	const addToCart = (itemToAdd: Item) => {
 		// whenever item is clicked, update the count of that item
@@ -98,9 +110,54 @@
 		appliedSearchTerm = typedSearchTerm;
 	};
 
-	$: displayedCatalog = appliedSearchTerm
-		? catalog.filter((item) => item.name.match(new RegExp(appliedSearchTerm, 'iu')))
+	const handleSort = () => {
+		if (sortDirection === 0) {
+			sortDirection = 1;
+		} else if (sortDirection === 1) {
+			sortDirection = -1;
+		} else {
+			sortDirection = 0;
+		}
+	};
+
+	const filterCriteria = Object.keys(catalog[0]);
+
+	$: filteredCatalog = appliedSearchTerm
+		? catalog.filter((item) => {
+				const value = item[selectedFilter];
+				if (typeof value === 'string') {
+					return value.match(new RegExp(appliedSearchTerm, 'iu'));
+				} else {
+					return value < Number(appliedSearchTerm);
+				}
+			})
 		: catalog;
+
+	$: displayedCatalog =
+		sortDirection === 0
+			? filteredCatalog
+			: filteredCatalog.sort((itemA, itemB) => {
+					const valueA = itemA[selectedFilter];
+					const valueB = itemB[selectedFilter];
+
+					if (typeof valueA === 'string' && typeof valueB === 'string') {
+						return valueA.localeCompare(valueB) * sortDirection;
+					} else if (typeof valueA === 'number' && typeof valueB === 'number') {
+						return (valueA - valueB) * sortDirection;
+					} else {
+						return 0;
+					}
+				});
+
+	$: {
+		if (sortDirection === 0) {
+			sortButtonText = SortButtonText.Unsorted;
+		} else if (sortDirection === 1) {
+			sortButtonText = SortButtonText.Ascending;
+		} else {
+			sortButtonText = SortButtonText.Descending;
+		}
+	}
 </script>
 
 <div class="grid grid-cols-[1fr_300px] grow min-h-0 gap-3">
@@ -108,10 +165,18 @@
 		<!-- search bar -->
 		<div class="h-10">
 			<input class="border h-full px-2" bind:value={typedSearchTerm} />
+			<select bind:value={selectedFilter}>
+				{#each filterCriteria as criteria}
+					<option value={criteria}>{criteria.toLocaleUpperCase()}</option>
+				{/each}
+			</select>
 			<Button text="Search" onClick={handleSearch} />
 		</div>
 		<!-- catalog container -->
-		<h1>Catalog</h1>
+		<div class="flex gap-2 items-center">
+			<p class="text-lg font-semibold">Catalog</p>
+			<Button text={sortButtonText} onClick={handleSort} />
+		</div>
 		<div class="flex gap-4 flex-wrap">
 			{#each displayedCatalog as item}
 				<Card
