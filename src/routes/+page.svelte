@@ -1,18 +1,8 @@
 <script lang="ts">
+	// /catalog/<identifier>
 	import Button from '$lib/components/button.svelte';
 	import Card from '$lib/components/card.svelte';
-
-	type Item = {
-		name: string;
-		price: number;
-		img: string;
-		category: string;
-	};
-
-	type CartItem = {
-		count: number;
-		item: Item;
-	};
+	import type { CartItem, Item } from '$lib/types';
 
 	let catalog: Item[] = [
 		{

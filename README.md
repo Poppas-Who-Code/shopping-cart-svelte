@@ -52,3 +52,42 @@ We've done the sorts of problems below in JS, but now let's repeat them using Sv
 
 - Add a `category` field to your items. Add UI that allows the user to filter the catalog by those categories (bonus: do not hardcode the categories when allowing the user to select one to filter by - instead get the list of categories from the data itself)
 - Add UI that allows the user to sort the catalog by price and name and also in reverse order.
+
+PROJECT MODE:
+Domain:
+
+Virtual Grave (Embalmed or Decomposing)
+
+- Schema
+  - Deceased
+    - ID (string)
+    - Birth date (datetime)
+    - Death date (datetime)
+    - Name (string)
+    - Family (string[])
+    - Obituary (string)
+    - Epitaph (string)
+    - Achievements (string[])
+    - Picture (byte[])
+    - Cause of death (string)
+    - Hobbies (string[])
+    - Ideologies (string[])
+    - Executor (string)
+    - Enable comments (boolean)
+  - Comments
+    - ID (string)
+    - Deceased (ID string)
+    - Parent comment (ID string)
+    - User (string)
+    - Text (string)
+- Features
+  - View a person's virtual grave
+  - See a list of public virtual graves
+    - Sort and search
+  - Create a virtual grave
+    - For yourself (specify executor to update after death)
+    - For another person
+    - Publicize or keep private
+  - Finalize and pay for virtual plot
+  - Virtual reception (funeral home)
+    - People can leave comments about the deceased (if enabled)
