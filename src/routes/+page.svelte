@@ -163,6 +163,35 @@
 		graves = data.graves;
 	};
 
+	const createGrave = async () => {
+		const response = await fetch('http://localhost:3000/graves', {
+			method: 'POST',
+			body: JSON.stringify({
+				birth_date: '',
+				death_date: '',
+				name: '',
+				family: '',
+				obituary: '',
+				epitaph: ''
+			})
+		});
+	};
+
+	const updateGrave = async (id: string) => {
+		const response = await fetch(`http://localhost:3000/graves/${id}`, {
+			method: 'PUT',
+			body: JSON.stringify({
+				birth_date: '',
+				death_date: '',
+				name: '',
+				family: '',
+				obituary: '',
+				epitaph: ''
+			})
+		});
+	};
+
+
 	onMount(() => {
 		// this will be called when the component enters the screen
 		getGraves();
@@ -170,6 +199,9 @@
 </script>
 
 <!-- <Button text="GET GRAVES" onClick={getGraves} /> -->
+{#each graves as grave}
+	<div>grave</div>
+{/each}
 
 <div class="grid grid-cols-[1fr_300px] grow min-h-0 gap-3">
 	<div class="flex flex-col gap-3 p-3">
