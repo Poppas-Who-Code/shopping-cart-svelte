@@ -3,6 +3,7 @@
 	import Button from '$lib/components/button.svelte';
 	import Card from '$lib/components/card.svelte';
 	import type { CartItem, Item } from '$lib/types';
+	import { onDestroy, onMount } from 'svelte';
 
 	let catalog: Item[] = [
 		{
@@ -24,6 +25,8 @@
 			img: 'https://cdn.greatlifepublishing.net/wp-content/uploads/sites/2/2020/06/01160949/chicken-video.jpg'
 		}
 	];
+
+	let graves = [];
 
 	enum SortButtonText {
 		Unsorted = 'Unsorted',
@@ -148,7 +151,25 @@
 			sortButtonText = SortButtonText.Descending;
 		}
 	}
+
+	const getGraves = async () => {
+		const response = await fetch('http://localhost:3000/graves');
+
+		if (response.status >= 400) {
+			// TRIGGER UI TO SHOW ERROR STATE
+		}
+
+		const data = await response.json();
+		graves = data.graves;
+	};
+
+	onMount(() => {
+		// this will be called when the component enters the screen
+		getGraves();
+	});
 </script>
+
+<!-- <Button text="GET GRAVES" onClick={getGraves} /> -->
 
 <div class="grid grid-cols-[1fr_300px] grow min-h-0 gap-3">
 	<div class="flex flex-col gap-3 p-3">
